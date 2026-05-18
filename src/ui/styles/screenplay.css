@@ -1,0 +1,161 @@
+/* Screenplay Formatting Styles */
+
+:root {
+  --screenplay-width: 8.5in;
+  --screenplay-height: 11in;
+
+  /* Page Margins (in inches) */
+  --margin-top: 1in;
+  --margin-bottom: 1in;
+  --margin-left: 1.5in;
+  --margin-right: 1in;
+
+  /* Element-specific margins */
+  --margin-slugline-left: 1.5in;
+  --margin-action-left: 1.5in;
+  --margin-character-left: 3.7in;
+  --margin-dialogue-left: 2.5in;
+  --margin-parenthetical-left: 3.1in;
+
+  /* Font */
+  --font-family: 'Courier New', 'Courier Prime', monospace;
+  --font-size: 12px;
+  --line-height: 1.5;
+  --font-weight-normal: 400;
+  --font-weight-bold: 700;
+
+  /* Colors */
+  --text-color: #000;
+  --bg-color: #fff;
+  --line-bg-color: #f9f9f9;
+  --line-border: #e0e0e0;
+}
+
+/* Base Line Element */
+.line {
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  line-height: var(--line-height);
+  color: var(--text-color);
+  background-color: var(--line-bg-color);
+  padding: 0;
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  outline: none;
+  border-bottom: 1px solid var(--line-border);
+  min-height: 18px;
+  display: block;
+  position: relative;
+}
+
+/* Line Types */
+.line-slugline {
+  margin-left: var(--margin-slugline-left);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+}
+
+.line-action {
+  margin-left: var(--margin-action-left);
+  font-weight: var(--font-weight-normal);
+}
+
+.line-character {
+  margin-left: var(--margin-character-left);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+}
+
+.line-dialogue {
+  margin-left: var(--margin-dialogue-left);
+  font-weight: var(--font-weight-normal);
+  max-width: 3.5in;
+}
+
+.line-parenthetical {
+  margin-left: var(--margin-parenthetical-left);
+  font-weight: var(--font-weight-normal);
+  font-style: italic;
+  max-width: 2.5in;
+}
+
+/* Editor Container */
+.screenplay-editor {
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  width: var(--screenplay-width);
+  max-height: 100%;
+  overflow-y: auto;
+  padding-top: var(--margin-top);
+  padding-bottom: var(--margin-bottom);
+  margin: 0 auto;
+  background: var(--bg-color);
+  color: var(--text-color);
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Novel Mode Override */
+.novel-mode .line-slugline {
+  text-transform: none;
+  font-weight: var(--font-weight-normal);
+}
+
+/* Focus State */
+.line:focus {
+  background-color: rgba(0, 123, 255, 0.05);
+  border-bottom-color: #007bff;
+}
+
+/* Empty Line Indicator */
+.line:empty::before {
+  content: attr(data-placeholder);
+  color: #aaa;
+  font-style: italic;
+}
+
+/* Page Break (for future use) */
+.page-break {
+  page-break-after: always;
+  height: 11in;
+  border-top: 1px dashed #ccc;
+  margin: 1in 0;
+}
+
+/* Selection Highlight */
+::selection {
+  background-color: rgba(0, 123, 255, 0.3);
+  color: inherit;
+}
+
+/* Print Styles */
+@media print {
+  .screenplay-editor {
+    width: 8.5in;
+    height: 11in;
+    padding: 1in;
+    margin: 0;
+    border: none;
+    box-shadow: none;
+  }
+
+  .line {
+    page-break-inside: avoid;
+    border: none;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-color: #e0e0e0;
+    --bg-color: #1e1e1e;
+    --line-bg-color: #2d2d2d;
+    --line-border: #404040;
+  }
+
+  .screenplay-editor {
+    border-color: #404040;
+  }
+}
