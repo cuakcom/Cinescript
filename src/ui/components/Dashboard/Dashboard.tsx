@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { useAppSelector } from '@core/store/hooks';
+import { BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './Dashboard.css';
 
 export const Dashboard: React.FC = () => {
@@ -64,6 +65,62 @@ export const Dashboard: React.FC = () => {
       .sort((a, b) => b.words - a.words)
       .slice(0, 10);
   }, [project.chapters]);
+
+  const sceneChartData = useMemo(() => {
+    return project.chapters
+      .flatMap(ch =>
+        ch.scenes.map(scene => ({
+          name: scene.title.substring(0, 20),
+          words: scene.metadata.wordCount,
+          chapter: ch.title,
+        }))
+      )
+      .slice(0, 15);
+  }, [project.chapters]);
+
+  const characterRoleData = useMemo(() => {
+    const roles: Record<string, number> = {
+      protagonist: 0,
+      antagonist: 0,
+      supporting: 0,
+      extra: 0,
+    };
+
+    project.characters.forEach(char => {
+      roles[char.role]++;
+    });
+
+    return Object.entries(roles)
+      .filter(([_, count]) => count > 0)
+      .map(([role, count]) => ({
+        name: role.charAt(0).toUpperCase() + role.slice(1),
+        value: count,
+        role,
+      }));
+  }, [project.characters]);
+
+  const cumulativeWordsData = useMemo(() => {
+    let cumulative = 0;
+    return project.chapters
+      .flatMap((ch, chIdx) =>
+        ch.scenes.map((scene, scIdx) => {
+          cumulative += scene.metadata.wordCount;
+          return {
+            name: `${chIdx + 1}.${scIdx + 1}`,
+            cumulative,
+            words: scene.metadata.wordCount,
+          };
+        })
+      )
+      .slice(0, 30);
+  }, [project.chapters]);
+
+  const roleColors: Record<string, string> = {
+    protagonist: '#28a745',
+    antagonist: '#d9534f',
+    supporting: '#007bff',
+    extra: '#999',
+  };
 
   const getRoleColor = (role: string) => {
     const colors: Record<string, string> = {
@@ -137,6 +194,69 @@ export const Dashboard: React.FC = () => {
             <span className="avg-label">Líneas de Diálogo</span>
             <span className="avg-value">{stats.dialogueLines}</span>
           </div>
+        </div>
+      </section>
+
+      {/* Charts Section */}
+      <section className="charts-section">
+        <h2>Análisis Visual</h2>
+        <div className="charts-grid">
+          {sceneChartData.length > 0 && (
+            <div className="chart-container">
+              <h3>Palabras por Escena</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={sceneChartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="words" fill="#007bff" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+
+          {characterRoleData.length > 0 && (
+            <div className="chart-container">
+              <h3>Distribución por Rol</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={characterRoleData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, value }) => `${name}: ${value}`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {characterRoleData.map((entry) => (
+                      <Cell key={`cell-${entry.role}`} fill={roleColors[entry.role]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+
+          {cumulativeWordsData.length > 0 && (
+            <div className="chart-container chart-full-width">
+              <h3>Palabras Acumuladas</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={cumulativeWordsData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="cumulative" stroke="#28a745" name="Total Acumulado" strokeWidth={2} />
+                  <Line type="monotone" dataKey="words" stroke="#ffc107" name="Palabras por Escena" strokeWidth={1} opacity={0.5} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </div>
       </section>
 
