@@ -4,6 +4,7 @@ import { setActiveTab, setSelectedChapterId } from '@core/store/uiSlice';
 import { ScriptEditor } from '@components/Editor/ScriptEditor';
 import { ProjectTree } from '@components/Structure/ProjectTree';
 import { CharacterList } from '@components/Characters/CharacterList';
+import { CharacterRelationshipGraph } from '@components/Characters/CharacterRelationshipGraph';
 import { LocationList } from '@components/Locations/LocationList';
 import { Dashboard } from '@components/Dashboard/Dashboard';
 import { ExportModal } from '@components/Export/ExportModal';
@@ -102,6 +103,12 @@ function App() {
               👥 Personajes
             </button>
             <button
+              className={`tab-button ${activeTab === 'relationships' ? 'active' : ''}`}
+              onClick={() => handleTabChange('relationships')}
+            >
+              🔗 Relaciones
+            </button>
+            <button
               className={`tab-button ${activeTab === 'locations' ? 'active' : ''}`}
               onClick={() => handleTabChange('locations')}
             >
@@ -127,6 +134,10 @@ function App() {
 
             {activeTab === 'characters' && (
               <CharacterList />
+            )}
+
+            {activeTab === 'relationships' && (
+              <CharacterRelationshipGraph />
             )}
 
             {activeTab === 'locations' && (
