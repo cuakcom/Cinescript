@@ -24,8 +24,11 @@ function placeCaret(el) {
 editor.appendChild(createLine('slugline', 'INT. LOCALIZACIÓN - DÍA'));
 
 editor.addEventListener('keydown', (e) => {
-  const line = window.getSelection().anchorNode?.parentElement;
-  if (!line?.classList?.contains('line')) return;
+  const sel = window.getSelection();
+  const anchorNode = sel.anchorNode;
+  const parentEl = anchorNode?.nodeType === Node.TEXT_NODE ? anchorNode.parentElement : anchorNode;
+  const line = parentEl?.closest('.line');
+  if (!line) return;
 
   if (e.key === 'Enter') {
     e.preventDefault();
