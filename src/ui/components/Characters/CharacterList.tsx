@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '@core/store/hooks';
 import { deleteCharacter, setSelectedCharacterId } from '@core/store/projectSlice';
 import { CharacterForm } from './CharacterForm';
+import { CharacterRelationships } from './CharacterRelationships';
 import './CharacterList.css';
 
 export const CharacterList: React.FC = () => {
@@ -10,6 +11,7 @@ export const CharacterList: React.FC = () => {
   const selectedCharacterId = useAppSelector(state => state.ui.selectedCharacterId);
   const [showForm, setShowForm] = useState(false);
   const [editingCharacterId, setEditingCharacterId] = useState<string | null>(null);
+  const [showRelationships, setShowRelationships] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState<string>('all');
 
@@ -149,6 +151,16 @@ export const CharacterList: React.FC = () => {
                   ✎ Editar
                 </button>
                 <button
+                  className="btn-action relationships"
+                  onClick={e => {
+                    e.stopPropagation();
+                    setShowRelationships(character.id);
+                  }}
+                  title="Relaciones"
+                >
+                  🔗 Relaciones
+                </button>
+                <button
                   className="btn-action delete"
                   onClick={e => {
                     e.stopPropagation();
@@ -169,6 +181,15 @@ export const CharacterList: React.FC = () => {
         <CharacterForm
           character={selectedCharacter}
           onClose={handleCloseForm}
+        />
+      )}
+
+      {/* Character Relationships Modal */}
+      {showRelationships && (
+        <CharacterRelationships
+          character={characters.find(c => c.id === showRelationships)!}
+          allCharacters={characters}
+          onClose={() => setShowRelationships(null)}
         />
       )}
     </div>

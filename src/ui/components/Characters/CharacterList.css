@@ -300,6 +300,16 @@ body.dark-mode .character-actions {
   background: #0056b3;
 }
 
+.btn-action.relationships {
+  background: #17a2b8;
+  color: #fff;
+  border: none;
+}
+
+.btn-action.relationships:hover {
+  background: #138496;
+}
+
 .btn-action.delete {
   background: #f0f0f0;
   color: #d9534f;

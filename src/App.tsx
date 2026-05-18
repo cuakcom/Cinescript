@@ -5,6 +5,8 @@ import { ScriptEditor } from '@components/Editor/ScriptEditor';
 import { ProjectTree } from '@components/Structure/ProjectTree';
 import { CharacterList } from '@components/Characters/CharacterList';
 import { LocationList } from '@components/Locations/LocationList';
+import { Dashboard } from '@components/Dashboard/Dashboard';
+import { ExportModal } from '@components/Export/ExportModal';
 import './ui/styles/screenplay.css';
 import './ui/styles/layout.css';
 import './App.css';
@@ -14,6 +16,7 @@ function App() {
   const project = useAppSelector(state => state.project);
   const ui = useAppSelector(state => state.ui);
   const [selectedSceneId, setSelectedSceneId] = useState<string | null>(null);
+  const [showExportModal, setShowExportModal] = useState(false);
 
   const activeTab = ui.activeTab;
 
@@ -45,8 +48,8 @@ function App() {
           </div>
         </div>
         <div className="header-right">
-          <button className="btn-small">Guardar</button>
-          <button className="btn-small">Exportar</button>
+          <button className="btn-small" title="Guardar proyecto (Ctrl+S)">Guardar</button>
+          <button className="btn-small" onClick={() => setShowExportModal(true)}>📥 Exportar</button>
         </div>
       </header>
 
@@ -131,17 +134,16 @@ function App() {
             )}
 
             {activeTab === 'dashboard' && (
-              <div className="panel-content">
-                <h2>Dashboard</h2>
-                <p>📊 Estadísticas y análisis del proyecto</p>
-                <p style={{ marginTop: '20px', fontSize: '12px', color: '#999' }}>
-                  (Próxima fase: gráficos de palabras, línea de tiempo de personajes, apariciones por escena)
-                </p>
-              </div>
+              <Dashboard />
             )}
           </div>
         </div>
       </div>
+
+      {/* Export Modal */}
+      {showExportModal && (
+        <ExportModal onClose={() => setShowExportModal(false)} />
+      )}
     </div>
   );
 }
