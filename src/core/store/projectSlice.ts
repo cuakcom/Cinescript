@@ -2,38 +2,154 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 import type { Project, Chapter, Scene, Character, Location, Line } from '@models/types';
 
+const demoCharacterId1 = uuidv4();
+const demoCharacterId2 = uuidv4();
+const demoLocationId1 = uuidv4();
+const demoSceneId1 = uuidv4();
+
 const initialState: Project = {
   id: uuidv4(),
-  title: 'Mi Guion',
-  author: '',
+  title: 'El Detective Perdido',
+  author: 'Cinescript',
   format: 'screenplay',
   chapters: [
     {
       id: uuidv4(),
-      title: 'Acto I',
+      title: 'Acto I - El Crimen',
       order: 1,
       scenes: [
         {
-          id: uuidv4(),
-          title: 'Escena 1',
+          id: demoSceneId1,
+          title: 'Oficina en la Noche',
           order: 1,
-          summary: '',
+          summary: 'Un detective llega a la escena del crimen en la madrugada',
           lines: [
             {
               id: uuidv4(),
               type: 'slugline',
-              content: 'INT. LOCALIZACIÓN - DÍA',
+              content: 'INT. OFICINA POLICÍA - NOCHE',
+            },
+            {
+              id: uuidv4(),
+              type: 'action',
+              content: 'La lluvia golpea contra las ventanas. El detective JUAN entra por la puerta principal, empapado. Sus ojos cansan de buscar respuestas.',
+            },
+            {
+              id: uuidv4(),
+              type: 'character',
+              content: 'JUAN',
+              characterId: demoCharacterId1,
+            },
+            {
+              id: uuidv4(),
+              type: 'dialogue',
+              content: '¿Dónde está el expediente? Tiene que estar aquí.',
+            },
+            {
+              id: uuidv4(),
+              type: 'parenthetical',
+              content: 'observa el escritorio vacío',
+            },
+            {
+              id: uuidv4(),
+              type: 'action',
+              content: 'Entra SARA, su compañera, con dos tazas de café. Parece preocupada.',
+            },
+            {
+              id: uuidv4(),
+              type: 'character',
+              content: 'SARA',
+              characterId: demoCharacterId2,
+            },
+            {
+              id: uuidv4(),
+              type: 'dialogue',
+              content: 'El jefe lo pidió hace dos horas. Dijo que era urgente.',
+            },
+            {
+              id: uuidv4(),
+              type: 'character',
+              content: 'JUAN',
+            },
+            {
+              id: uuidv4(),
+              type: 'dialogue',
+              content: 'Nada es urgente a las tres de la mañana. Excepto la verdad.',
             },
           ],
-          charactersInScene: [],
-          locationsInScene: [],
-          metadata: { wordCount: 0 },
+          charactersInScene: [demoCharacterId1, demoCharacterId2],
+          locationsInScene: [demoLocationId1],
+          metadata: { wordCount: 87 },
         },
       ],
     },
   ],
-  characters: [],
-  locations: [],
+  characters: [
+    {
+      id: demoCharacterId1,
+      name: 'Juan García',
+      description: 'Detective veterano, buscador de verdades',
+      role: 'protagonist',
+      appearance: {
+        age: 42,
+        gender: 'Masculino',
+        physicalTraits: 'Alto, cabello gris en las sienes, cicatriz en la mejilla izquierda, ojos azules penetrantes',
+        voice: 'Grave y cansada, habla lentamente como si pensara cada palabra',
+      },
+      backstory: 'Detective de homicidios con 20 años de experiencia. Su vida es el trabajo. Ha perdido a su familia en el camino, pero no se arrepiente. Cree que cada caso que resuelve evita más tragedias.',
+      relationships: [
+        {
+          targetCharacterId: demoCharacterId2,
+          type: 'ally',
+          description: 'Compañera de trabajo, confía ciegamente en ella',
+          tension: 20,
+        },
+      ],
+      statistics: {
+        appearances: 1,
+        dialogueLines: 3,
+      },
+    },
+    {
+      id: demoCharacterId2,
+      name: 'Sara López',
+      description: 'Detective joven, con intuición excepcional',
+      role: 'supporting',
+      appearance: {
+        age: 28,
+        gender: 'Femenino',
+        physicalTraits: 'Estatura media, cabello negro recogido, ojos marrones, sonrisa amable pero desaparece rápido',
+        voice: 'Aguda y clara, habla con convicción, rara vez duda',
+      },
+      backstory: 'Detective nueva en la unidad de homicidios, pero con un currículo impresionante. Es la mano derecha de Juan. Tiene un secreto que oculta incluso a él.',
+      relationships: [
+        {
+          targetCharacterId: demoCharacterId1,
+          type: 'mentor',
+          description: 'Aprende de Juan cada día',
+          tension: 10,
+        },
+      ],
+      statistics: {
+        appearances: 1,
+        dialogueLines: 2,
+      },
+    },
+  ],
+  locations: [
+    {
+      id: demoLocationId1,
+      name: 'Oficina Policía - Sección Homicidios',
+      description: 'Una oficina desordenada llena de archivos, escritorios rotos, máquina de café rota. Las paredes son grises, las ventanas grandes miran a la ciudad nocturna. Un lugar donde se resuelven misterios.',
+      type: 'interior',
+      appearance: {
+        time: 'night',
+        weather: 'Lluvia fuerte golpea las ventanas',
+      },
+      scenesUsed: [demoSceneId1],
+      relationships: [],
+    },
+  ],
   metadata: {
     createdAt: new Date().toISOString(),
     lastModified: new Date().toISOString(),
