@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@core/store/hooks';
 import { setActiveTab, setSelectedChapterId } from '@core/store/uiSlice';
 import { ScriptEditor } from '@components/Editor/ScriptEditor';
+import { ProjectTree } from '@components/Structure/ProjectTree';
+import { CharacterList } from '@components/Characters/CharacterList';
+import { LocationList } from '@components/Locations/LocationList';
 import './ui/styles/screenplay.css';
 import './ui/styles/layout.css';
 import './App.css';
@@ -116,30 +119,24 @@ function App() {
             ) : null}
 
             {activeTab === 'structure' && (
-              <div className="panel-content">
-                <h2>Estructura del Proyecto</h2>
-                <p>Vista de capítulos y escenas aquí</p>
-              </div>
+              <ProjectTree onSceneSelect={setSelectedSceneId} />
             )}
 
             {activeTab === 'characters' && (
-              <div className="panel-content">
-                <h2>Personajes</h2>
-                <p>Sistema de personajes aquí</p>
-              </div>
+              <CharacterList />
             )}
 
             {activeTab === 'locations' && (
-              <div className="panel-content">
-                <h2>Localizaciones</h2>
-                <p>Sistema de localizaciones aquí</p>
-              </div>
+              <LocationList />
             )}
 
             {activeTab === 'dashboard' && (
               <div className="panel-content">
                 <h2>Dashboard</h2>
-                <p>Estadísticas y análisis aquí</p>
+                <p>📊 Estadísticas y análisis del proyecto</p>
+                <p style={{ marginTop: '20px', fontSize: '12px', color: '#999' }}>
+                  (Próxima fase: gráficos de palabras, línea de tiempo de personajes, apariciones por escena)
+                </p>
               </div>
             )}
           </div>
