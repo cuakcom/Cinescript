@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useAppSelector } from '@core/store/hooks';
 import { ExportService } from '@core/services/ExportService';
+import { PdfExportService } from '@core/services/PdfExportService';
+import { DocxExportService } from '@core/services/DocxExportService';
 import type { Project } from '@core/models/types';
 import './ExportModal.css';
 
@@ -12,38 +14,43 @@ export const ExportModal: React.FC<ExportModalProps> = ({ onClose }) => {
   const project = useAppSelector(state => state.project);
   const [exporting, setExporting] = useState(false);
 
-  const handleExport = (format: 'txt' | 'json' | 'csv-characters' | 'csv-scenes') => {
+  const handleExport = (format: 'txt' | 'json' | 'csv-characters' | 'csv-scenes' | 'pdf' | 'docx') => {
     setExporting(true);
 
     setTimeout(() => {
-      let content: string;
-      let filename: string;
-      let mimeType: string;
-
       switch (format) {
-        case 'txt':
-          content = ExportService.exportToTxt(project);
-          filename = `${project.title.replace(/\s+/g, '_')}.txt`;
-          mimeType = 'text/plain';
+        case 'txt': {
+          const content = ExportService.exportToTxt(project);
+          const filename = `${project.title.replace(/\s+/g, '_')}.txt`;
+          ExportService.downloadFile(content, filename, 'text/plain');
           break;
-        case 'json':
-          content = ExportService.exportToJson(project);
-          filename = `${project.title.replace(/\s+/g, '_')}_proyecto.json`;
-          mimeType = 'application/json';
+        }
+        case 'json': {
+          const content = ExportService.exportToJson(project);
+          const filename = `${project.title.replace(/\s+/g, '_')}_proyecto.json`;
+          ExportService.downloadFile(content, filename, 'application/json');
           break;
-        case 'csv-characters':
-          content = ExportService.exportCharactersCsv(project);
-          filename = `${project.title.replace(/\s+/g, '_')}_personajes.csv`;
-          mimeType = 'text/csv';
+        }
+        case 'csv-characters': {
+          const content = ExportService.exportCharactersCsv(project);
+          const filename = `${project.title.replace(/\s+/g, '_')}_personajes.csv`;
+          ExportService.downloadFile(content, filename, 'text/csv');
           break;
-        case 'csv-scenes':
-          content = ExportService.exportScenesCsv(project);
-          filename = `${project.title.replace(/\s+/g, '_')}_escenas.csv`;
-          mimeType = 'text/csv';
+        }
+        case 'csv-scenes': {
+          const content = ExportService.exportScenesCsv(project);
+          const filename = `${project.title.replace(/\s+/g, '_')}_escenas.csv`;
+          ExportService.downloadFile(content, filename, 'text/csv');
+          break;
+        }
+        case 'pdf':
+          PdfExportService.exportToPdf(project);
+          break;
+        case 'docx':
+          DocxExportService.exportToDocx(project);
           break;
       }
 
-      ExportService.downloadFile(content, filename, mimeType);
       setExporting(false);
       onClose();
     }, 300);
@@ -71,6 +78,26 @@ export const ExportModal: React.FC<ExportModalProps> = ({ onClose }) => {
               <div className="option-icon">📄</div>
               <h3>TXT (Guión)</h3>
               <p>Formato de texto plano con estructura de guión cinematográfico</p>
+            </button>
+
+            <button
+              className="export-option"
+              onClick={() => handleExport('pdf')}
+              disabled={exporting}
+            >
+              <div className="option-icon">📕</div>
+              <h3>PDF (Profesional)</h3>
+              <p>Documento PDF con formato de guión profesional</p>
+            </button>
+
+            <button
+              className="export-option"
+              onClick={() => handleExport('docx')}
+              disabled={exporting}
+            >
+              <div className="option-icon">📘</div>
+              <h3>DOCX (Word)</h3>
+              <p>Documento Word editable con estructura de guión</p>
             </button>
 
             <button
@@ -113,9 +140,6 @@ export const ExportModal: React.FC<ExportModalProps> = ({ onClose }) => {
         </div>
 
         <div className="modal-footer">
-          <p className="note">
-            💡 Los formatos PDF y DOCX estarán disponibles en la próxima versión
-          </p>
           <button className="btn-close-modal" onClick={onClose}>
             Cerrar
           </button>

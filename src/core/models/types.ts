@@ -117,7 +117,7 @@ export interface EditorState {
 }
 
 export interface UIState {
-  activeTab: 'editor' | 'structure' | 'characters' | 'locations' | 'dashboard';
+  activeTab: 'editor' | 'structure' | 'characters' | 'relationships' | 'locations' | 'dashboard';
   selectedCharacterId?: string;
   selectedLocationId?: string;
   selectedChapterId?: string;
