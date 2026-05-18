@@ -27,7 +27,7 @@ interface GraphEdge {
 export const CharacterRelationshipGraph: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const cyRef = useRef<cytoscape.Core | null>(null);
-  const project = useSelector((state: RootState) => state.project.current);
+  const project = useSelector((state: RootState) => state.project);
 
   useEffect(() => {
     if (!containerRef.current || !project) return;
