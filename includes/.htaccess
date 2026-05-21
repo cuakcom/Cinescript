@@ -1,0 +1,2 @@
+# Solo carga vía require_once; nunca como recurso HTTP.
+Require all denied
