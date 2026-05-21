@@ -1,31 +1,87 @@
-# Cinescript (v0 prototipo)
+# Cinescript
 
-Prototipo inicial para una app de escritura de guion orientada a Windows con enfoque ligero y alta compatibilidad.
+Editor de guiones auto-alojado al estilo **Celtx**, escrito en **PHP 8.3** y **JavaScript vainilla**.
+Pensado para desplegar tal cual en cualquier servidor Apache.
 
-## Decisiones técnicas
-- **Tecnología base actual:** HTML/CSS/JS puro para maximizar compatibilidad y ligereza en prototipo.
-- **Objetivo de empaquetado Windows en siguiente iteración:** Tauri (ligero) o Electron (máxima compatibilidad).
+> Tab cambia el tipo de bloque · Enter salta al siguiente lógico. Sin ratón.
 
-## Funcionalidad incluida
-- Editor con fuente **Courier 12** y márgenes tipo guion.
-- Flujo de estilos con Enter/Tab para guion:
-  - Inicio: **Cabecera (slugline) en negrita**.
-  - Enter: avanza de cabecera a acción.
-  - Tab en acción: personaje.
-  - Enter en personaje: diálogo.
-  - Tab en diálogo: acotación.
-- Interruptor de modo **Guion industria / Novela estándar**.
-- Paneles de:
-  - Estructura (escenas)
-  - Personajes
-  - Localizaciones
-- Exportación a **TXT** y **JSON de proyecto**.
+## 1. Requisitos
 
-## Pendiente para próxima versión
-- Exportación real a **PDF, DOCX y FDX**.
-- Fichas completas con campos avanzados y grafo de relaciones.
-- Integración opcional con generador local de imágenes (ComfyUI/Stable Diffusion).
-- Empaquetado a `.exe` para Windows.
+- PHP **8.3+** con extensiones `pdo_sqlite` y `mbstring` (vienen por defecto en la mayoría de distribuciones).
+- Apache 2.4+. No requiere `mod_rewrite`.
+- Permisos de escritura sobre `data/` (para la base SQLite).
 
-## Ejecutar
-Abre `index.html` en un navegador moderno.
+## 2. Despliegue
+
+Copia el repositorio al `DocumentRoot` de Apache (o un VirtualHost):
+
+```bash
+cp -r Cinescript/ /var/www/cinescript/
+chown -R www-data:www-data /var/www/cinescript/data
+```
+
+Visita `http://tu-servidor/cinescript/`. La base SQLite se crea automáticamente
+en `data/cinescript.sqlite` en el primer arranque.
+
+Para desarrollo rápido sin Apache:
+
+```bash
+php -S 0.0.0.0:8080 -t .
+```
+
+## 3. Arquitectura
+
+```
+Cinescript/
+├── index.php                  # Página principal (HTML + bootstrap)
+├── api/
+│   ├── _bootstrap.php         # Carga clases comunes
+│   ├── cargar.php             # GET  -> proyecto + bloques + sidebars
+│   ├── guardar.php            # POST -> sustituye bloques del proyecto
+│   ├── personajes.php         # GET/POST/DELETE
+│   └── localizaciones.php     # GET/POST/DELETE
+├── assets/
+│   ├── css/style.css          # Layout y estilos Celtx-like
+│   └── js/editor.js           # Lógica de teclado + fetch
+├── includes/
+│   ├── Database.php           # PDO SQLite, migraciones automáticas
+│   ├── Http.php               # Helpers JSON/HTTP
+│   └── BlockType.php          # Enum tipado de tipos de bloque
+└── data/                      # SQLite (creada en runtime, no versionada)
+```
+
+## 4. Atajos de teclado
+
+| Tecla              | Acción                                                   |
+| ------------------ | -------------------------------------------------------- |
+| **Tab**            | Rota el tipo del bloque actual (Escena → Acción → …)     |
+| **Shift + Tab**    | Rotación en sentido inverso                              |
+| **Enter**          | Crea bloque siguiente según el tipo actual               |
+| **Backspace** al inicio de un bloque vacío | Elimina el bloque y vuelve al anterior       |
+| **Ctrl/Cmd + S**   | Guarda manualmente                                       |
+
+Reglas de salto al pulsar **Enter** (idénticas a Celtx):
+
+```
+Escena      → Acción
+Acción      → Acción
+Personaje   → Diálogo
+Diálogo     → Acción
+Acotación   → Diálogo
+Transición  → Escena
+```
+
+## 5. Paneles laterales
+
+- **Personajes**: lista única por nombre. Se autoindexan los nombres tecleados
+  en bloques de tipo `Personaje`. Doble clic inserta `PERSONAJE` + `Diálogo` en
+  el cursor.
+- **Localizaciones**: extrae automáticamente de bloques de `Escena` que sigan
+  el patrón `INT./EXT. NOMBRE - MOMENTO`. Doble clic inserta una escena nueva.
+
+## 6. Seguridad
+
+- Todas las consultas SQL son `prepared statements` con PDO.
+- `data/` e `includes/` quedan bloqueados a peticiones HTTP vía `.htaccess`.
+- El contenido del editor se persiste y renderiza como texto plano (nunca HTML).
+- Validación estricta del tipo de bloque con `enum` PHP 8.3.
